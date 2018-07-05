@@ -14,7 +14,8 @@
               <hr>
               <p class="card-text">{{str_limit($post->body,30)}}</p>
               <hr>
-              <p><small>Written on {{$post->created_at}}</small></p>
+            <small>Written on {{$post->created_at}}</small><br>
+            <small>By {{$post->user->name}}</small><br>
             <a href="/lsapp/public/posts/{{$post->id}}" class="btn btn-primary">Show More</a>
             </div>
           </div>
