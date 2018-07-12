@@ -60,7 +60,7 @@ class PostsController extends Controller
             'body' => 'required',
             'cover_image' => 'image|nullable|max:1999'
         ]);
-
+    //dd($request);
         //Create Post
 
         //Handle file upload
@@ -78,7 +78,7 @@ class PostsController extends Controller
             $fileNameToStore = $fileName.'_'.time().'.'.$extension;
 
             //upload file
-            $path = $request->file('cover_image')->move('public/cover_images', $fileNameToStore);
+            $path = $request->file('cover_image')->storeAs('public/cover_images', $fileNameToStore);
 
         }
         else
@@ -140,13 +140,38 @@ class PostsController extends Controller
          //Validate post fields to ensure none empty fields
          $this->validate($request,[
             'title' => 'required',
-            'body' => 'required'
+            'body' => 'required',
+            'cover_image' => 'image|nullable|max:1999'
         ]);
+
+        //Handle file upload
+        if($request->hasFile('cover_image'))
+        {
+            $fileNameWithExt = $request->file('cover_image')->getClientOriginalName();
+
+            //Get just filename
+            $fileName = pathinfo($fileNameWithExt, PATHINFO_FILENAME);
+
+            //Get just extension
+            $extension = $request->file('cover_image')->getClientOriginalExtension();
+
+            //Filename to store
+            $fileNameToStore = $fileName.'_'.time().'.'.$extension;
+
+            //upload file
+            $path = $request->file('cover_image')->storeAs('public/cover_images', $fileNameToStore);
+
+        }
+
 
         //Update Post
         $posts = Post::find($id);
         $posts->title = $request->input('title');
         $posts->body = $request->input('body');
+        if($request->hasFile('cover_image'))
+        {
+            $posts->cover_image = $fileNameToStore;
+        }
         $posts->save();
 
         return redirect('/posts')->with('success', 'Post Updated');
